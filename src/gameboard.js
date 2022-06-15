@@ -2,7 +2,7 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable eqeqeq */
 /* eslint-disable no-plusplus */
-import array2d from '../utils/utilities';
+import { array2d } from '../utils/utilities';
 
 export default class Gameboard {
   constructor() {
@@ -58,6 +58,8 @@ export default class Gameboard {
       this.board[y][x] = 'hit';
     } else if (this.board[y][x] == '') {
       this.board[y][x] = 'miss';
+    } else if (this.board[y][x] == 'hit' || this.board[y][x] == 'miss') {
+      return 'Attack Invalid';
     }
   }
 

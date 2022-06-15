@@ -177,7 +177,6 @@ test('receiveAttack will record a missed attack', () => {
   const gameboard = new Gameboard();
   gameboard.placeShip(patrolBoat, [4, 7], 'horizontal');
   gameboard.receiveAttack([1, 2]);
-  console.log(gameboard.ships)
   expect(gameboard.board).toStrictEqual(
     [
       ['', '', '', '', '', '', '', '', '', ''],
@@ -192,6 +191,14 @@ test('receiveAttack will record a missed attack', () => {
       ['', '', '', '', '', '', '', '', '', ''],
     ],
   );
+});
+
+test('receiveAttack will not register a hit on an already-attacked coordinate', () => {
+  const patrolBoat = new Ship(2);
+  const gameboard = new Gameboard();
+  gameboard.placeShip(patrolBoat, [4, 7], 'horizontal');
+  gameboard.receiveAttack([1, 2]);
+  expect(gameboard.receiveAttack([1, 2])).toBe('Attack Invalid');
 });
 
 test('All ships sunk', () => {
