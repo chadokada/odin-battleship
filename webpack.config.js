@@ -1,15 +1,17 @@
+/* eslint-disable indent */
 const path = require('path');
 
 module.exports = {
     mode: 'development',
     entry: {
-        index: './src/index.js',
-        weather: './src/modules/weather.js',
-        dom: './src/modules/dom.js',
-        utils: './src/modules/utils.js',
-        storage: './src/modules/storage.js'
+        gameboard: './src/gameboard.js',
+        player: './src/player.js',
+        ship: './src/ship.js'
     },
     devtool: 'inline-source-map',
+    devServer: {
+        static: './dist'
+    },
     output: {
         filename: 'main.js',
         filename: '[name].main.js',

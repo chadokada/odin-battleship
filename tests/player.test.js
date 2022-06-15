@@ -50,6 +50,37 @@ test('Send Attack works on human player', () => {
   );
 });
 
+test('Send Attack works on human player and ships on the board', () => {
+  const player1 = new Player();
+  player1.setPlayerName('Player 1');
+  player1.setPlayerType(0);
+
+
+  const gameboard2 = new Gameboard();
+  const player2 = new Player(gameboard2);
+  const destroyer = new Ship(3);
+  player2.setPlayerName('Player 2');
+  player2.setPlayerType(0);
+  player2.board.placeShip(destroyer, [5, 9], 'vertical');
+  player1.sendAttack(player2.board, [1, 2]);
+  player1.sendAttack(player2.board, [7, 9]);
+
+  expect(player2.board.board).toStrictEqual(
+    [
+      ['', '', '', '', '', '', '', '', '', ''],
+      ['', '', 'miss', '', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', '', '', '', destroyer],
+      ['', '', '', '', '', '', '', '', '', destroyer],
+      ['', '', '', '', '', '', '', '', '', 'hit'],
+      ['', '', '', '', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', '', '', '', ''],
+    ],
+  );
+});
+
 test('Send Attack works if attacking player is Computer', () => {
   const gameboard1 = new Gameboard();
   const player1 = new Player(gameboard1);
