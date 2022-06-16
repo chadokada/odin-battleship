@@ -5,9 +5,34 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Battleship</title>
-  <script src="./game.js" defer></script>
+  <script src="./game.main.js" defer></script>
 </head>
 <body>
-  
+  <div class="container">
+    <div class="header"></div>
+    <div class="player-container">
+      <table id="gameboard-player">
+        <!--
+          <tr>
+            <td></td>
+            <th>0</th>
+            <th>1</th>
+          </tr>
+          <tr>
+            <th>0</th>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <th>1</th>
+            <td></td>
+            <td></td>
+          </tr>
+        -->
+      </table>
+    </div>
+    <div class="opponent-container">
+      <div class="gameboard" id="gameboard-opponent"></div>
+  </div>
 </body>
 </html>
