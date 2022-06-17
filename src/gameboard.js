@@ -35,7 +35,8 @@ export default class Gameboard {
   placeShip(ship, coordinates, orientation) {
     const x = coordinates[1];
     const y = coordinates[0];
-    if (this.#isPlacementValid(ship, coordinates, orientation)) {
+    const placementValid = this.#isPlacementValid(ship, coordinates, orientation);
+    if (placementValid) {
       this.ships.push(ship);
       if (orientation === 'vertical') {
         for (let i = 0; i < ship.length; i++) {
@@ -47,6 +48,8 @@ export default class Gameboard {
           this.board[y][x + i] = ship;
         }
       }
+    } else {
+      return placementValid;
     }
   }
 

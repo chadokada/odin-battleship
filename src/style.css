@@ -21,7 +21,10 @@ body{
 
 .player-container,
 .opponent-container{
-  border: 1px solid
+  display:flex;
+  border: 1px solid;
+  flex-flow: row wrap;
+  align-content: flex-start;
 }
 
 /*
@@ -31,15 +34,36 @@ body{
   grid-template-columns: repeat(10, 35px);
 }
 */
+
+.gameboard-padding{
+  width: 100%;
+}
 table{
   border-spacing: 0px;
   border-collapse: collapse;
+  min-height: 401px;
+  min-width: 401px;
 }
 
 .board-cell-blank{
-  border: 1px solid blue;
+  border: 1px solid rgb(175, 175, 255);
+  height: 35px;
+  width: 35px;
 }
+
+.board-cell-ship{
+  background-color: blue;
+  height: 35px;
+  width: 35px;
+}
+
+.board-cell-blank:hover{
+  background-color: rgb(225, 225, 255);
+}
+
 .square{
   height: 35px;
   width: 35px;
 }
+
+
