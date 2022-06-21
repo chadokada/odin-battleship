@@ -107,6 +107,14 @@ test('Ship will not be placed vertically if a ship is in the way', () => {
   );
 });
 
+test('placeShip will return false if placement is invalid', () => {
+  const patrolBoat = new Ship(2);
+  const carrier = new Ship(5);
+  const gameboard = new Gameboard();
+
+  expect(gameboard.placeShip(carrier, [6, 2], 'vertical')).toStrictEqual(false);
+});
+
 test('Ship will not be placed horizontally if a ship is in the way', () => {
   const patrolBoat = new Ship(2);
   const carrier = new Ship(5);

@@ -49,12 +49,31 @@ table{
   border: 1px solid rgb(175, 175, 255);
   height: 35px;
   width: 35px;
+  box-sizing: border-box;
+}
+
+.board-cell-hit{
+  height: 35px;
+  width: 35px;
+  background-color: rgb(255, 200, 200);
+  border: 2px solid red;
+  box-sizing: border-box;
+}
+
+.board-cell-miss{
+  height: 35px;
+  width: 35px;
+  background-color: gray;
+  border: 2px solid gray;
+  box-sizing: border-box;
 }
 
 .board-cell-ship{
-  background-color: blue;
   height: 35px;
   width: 35px;
+  background-color: rgb(200, 200, 255);
+  border: 2px solid blue;
+  box-sizing: border-box;
 }
 
 .board-cell-blank:hover{

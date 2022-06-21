@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 /* eslint-disable import/prefer-default-export */
 /* eslint-disable no-plusplus */
 
@@ -50,7 +51,7 @@ export function renderGameboard(player) {
 
 export function showPlayerShips(playerObj) {
   const playerBoard = playerObj.board.board;
-  const gameBoard = document.querySelector('#gameboard-player');
+  // const gameBoard = document.querySelector('#gameboard-player');
 
   for (let row = 0; row < 10; row++) {
     for (let col = 0; col < 10; col++) {
@@ -62,5 +63,41 @@ export function showPlayerShips(playerObj) {
         currCell.className = 'board-cell-ship';
       }
     }
+  }
+}
+
+function renderPlayerAttack(opponent) {
+  const opponentBoard = opponent.board.board;
+
+  for (let row = 0; row < 10; row++) {
+    for (let col = 0; col < 10; col++) {
+      const currCoord = opponentBoard[row][col];
+      const currCell = document.querySelector(
+        `[y="${row}"][x="${col}"][player="opponent"]`
+      );
+
+      if (currCoord === 'hit') {
+        currCell.className = 'board-cell-hit';
+      } else if (currCoord === 'miss') {
+        currCell.className = 'board-cell-miss';
+      }
+    }
+  }
+}
+
+function playerAttack(opponent, coordinates) {
+  opponent.board.receiveAttack(coordinates);
+  renderPlayerAttack(opponent);
+}
+
+// rename this a better name
+export function allOpponentSquares(opponent) {
+  const opponentBoard = document.querySelector('#gameboard-opponent');
+
+  const cells = opponentBoard.querySelectorAll('.board-cell-blank');
+  for (const cell of cells) {
+    const y = cell.getAttribute('y');
+    const x = cell.getAttribute('x');
+    cell.addEventListener('click', () => playerAttack(opponent, [y, x]));
   }
 }
