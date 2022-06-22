@@ -16,12 +16,6 @@ function createBoardCell(tableRow, row, col, player) {
   boardCell.setAttribute('y', row - 1);
   boardCell.setAttribute('x', col - 1);
   boardCell.setAttribute('player', player);
-  /*
-  square.className = 'square';
-  square.setAttribute('y', row - 1);
-  square.setAttribute('x', col - 1);
-  boardCell.appendChild(square);
-  */
   tableRow.appendChild(boardCell);
 }
 
@@ -91,7 +85,7 @@ function playerAttack(opponent, coordinates) {
 }
 
 // rename this a better name
-export function allOpponentSquares(opponent) {
+export function opponentBoardListeners(opponent) {
   const opponentBoard = document.querySelector('#gameboard-opponent');
 
   const cells = opponentBoard.querySelectorAll('.board-cell-blank');

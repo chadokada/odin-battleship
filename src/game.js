@@ -1,3 +1,4 @@
+/* eslint-disable no-loop-func */
 /* eslint-disable no-restricted-syntax */
 import './style.css';
 import * as DOM from './dom';
@@ -19,7 +20,9 @@ const computer = new Player(board2);
 computer.setPlayerType(1);
 computer.setPlayerName('Computer');
 
-for (const player of [player1, computer]) {
+const players = [player1, computer];
+
+for (const player of players) {
   const carrier = new Ship(5);
   const battleship = new Ship(4);
   const destroyer = new Ship(3);
@@ -48,4 +51,25 @@ for (const player of [player1, computer]) {
 
 DOM.showPlayerShips(player1);
 
-DOM.allOpponentSquares(computer)
+let gameOver = false;
+
+let currentPlayer = 0;
+
+/*
+while (gameOver === false) {
+  if (currentPlayer === 0) {
+    document.addEventListener('click', (event) => {
+      currentPlayer = 1;
+    })
+  } else {
+    console.log('Currently playing: Computer')
+    currentPlayer = 0;
+  }
+}
+*/
+
+/*
+document.addEventListener('click', (event) => {
+  console.log(event.target.className)
+})
+*/
