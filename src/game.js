@@ -51,16 +51,21 @@ for (const player of players) {
 
 DOM.updatePlayerBoard(player1.board.board);
 
+//
+// game.js
+//
+
 function playerAttack(coordinates) {
   player1.sendAttack(computer.board, coordinates);
   DOM.updateOpponentBoard(computer.board.board);
   if (computer.board.allShipsSunk()) {
-    alert('Player has won!');
+    alert('Player has won!'); // This will be replaced with a function to formally end game
   }
+
   computer.sendAttack(player1.board);
   DOM.updatePlayerBoard(player1.board.board);
   if (player1.board.allShipsSunk()) {
-    alert('Computer has won!');
+    alert('Computer has won!'); // This will be replaced with a function to formally end game
   }
 }
 
