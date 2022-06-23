@@ -49,27 +49,30 @@ for (const player of players) {
   }
 }
 
-DOM.showPlayerShips(player1);
+DOM.updatePlayerBoard(player1.board.board);
 
-let gameOver = false;
-
-let currentPlayer = 0;
-
-/*
-while (gameOver === false) {
-  if (currentPlayer === 0) {
-    document.addEventListener('click', (event) => {
-      currentPlayer = 1;
-    })
-  } else {
-    console.log('Currently playing: Computer')
-    currentPlayer = 0;
+function playerAttack(coordinates) {
+  player1.sendAttack(computer.board, coordinates);
+  DOM.updateOpponentBoard(computer.board.board);
+  if (computer.board.allShipsSunk()) {
+    alert('Player has won!');
+  }
+  computer.sendAttack(player1.board);
+  DOM.updatePlayerBoard(player1.board.board);
+  if (player1.board.allShipsSunk()) {
+    alert('Computer has won!');
   }
 }
-*/
 
-/*
-document.addEventListener('click', (event) => {
-  console.log(event.target.className)
-})
-*/
+function attackHandlers() {
+  const opponentBoard = document.querySelector('#gameboard-opponent');
+
+  const cells = opponentBoard.querySelectorAll('.board-cell-blank');
+  for (const cell of cells) {
+    const y = cell.getAttribute('y');
+    const x = cell.getAttribute('x');
+    cell.addEventListener('click', () => playerAttack([y, x]));
+  }
+}
+
+attackHandlers()

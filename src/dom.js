@@ -11,7 +11,6 @@ function createHeader(tableRow, text) {
 
 function createBoardCell(tableRow, row, col, player) {
   const boardCell = document.createElement('td');
-  const square = document.createElement('div');
   boardCell.className = 'board-cell-blank';
   boardCell.setAttribute('y', row - 1);
   boardCell.setAttribute('x', col - 1);
@@ -43,26 +42,25 @@ export function renderGameboard(player) {
   }
 }
 
-export function showPlayerShips(playerObj) {
-  const playerBoard = playerObj.board.board;
-  // const gameBoard = document.querySelector('#gameboard-player');
-
+export function updatePlayerBoard(playerBoard) {
   for (let row = 0; row < 10; row++) {
     for (let col = 0; col < 10; col++) {
       const currCoord = playerBoard[row][col];
+      const currCell = document.querySelector(
+        `[y="${row}"][x="${col}"][player="player"]`
+      );
       if (currCoord.constructor.name === 'Ship') {
-        const currCell = document.querySelector(
-          `[y="${row}"][x="${col}"][player="player"]`
-        );
         currCell.className = 'board-cell-ship';
+      } else if (currCoord === 'hit') {
+        currCell.className = 'board-cell-hit';
+      } else if (currCoord === 'miss') {
+        currCell.className = 'board-cell-miss';
       }
     }
   }
 }
 
-function renderPlayerAttack(opponent) {
-  const opponentBoard = opponent.board.board;
-
+export function updateOpponentBoard(opponentBoard) {
   for (let row = 0; row < 10; row++) {
     for (let col = 0; col < 10; col++) {
       const currCoord = opponentBoard[row][col];
@@ -76,22 +74,5 @@ function renderPlayerAttack(opponent) {
         currCell.className = 'board-cell-miss';
       }
     }
-  }
-}
-
-function playerAttack(opponent, coordinates) {
-  opponent.board.receiveAttack(coordinates);
-  renderPlayerAttack(opponent);
-}
-
-// rename this a better name
-export function opponentBoardListeners(opponent) {
-  const opponentBoard = document.querySelector('#gameboard-opponent');
-
-  const cells = opponentBoard.querySelectorAll('.board-cell-blank');
-  for (const cell of cells) {
-    const y = cell.getAttribute('y');
-    const x = cell.getAttribute('x');
-    cell.addEventListener('click', () => playerAttack(opponent, [y, x]));
   }
 }
