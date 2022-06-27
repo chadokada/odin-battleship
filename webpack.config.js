@@ -8,7 +8,8 @@ module.exports = {
         player: './src/player.js',
         ship: './src/ship.js',
         game: './src/game.js',
-        dom: './src/dom.js'
+        dom: './src/dom.js',
+        pubSub: './src/pubsub.js'
     },
     devtool: 'inline-source-map',
     devServer: {

@@ -6,6 +6,7 @@ import Player from './player';
 import Ship from './ship';
 import Gameboard from './gameboard';
 import { getRandInt } from '../utils/utilities';
+import pubSub from './pubsub';
 
 DOM.renderGameboard('player');
 DOM.renderGameboard('opponent');
@@ -51,33 +52,36 @@ for (const player of players) {
 
 DOM.updatePlayerBoard(player1.board.board);
 
-//
-// game.js
-//
+function endGame(winner) {
+  // Delete all attack listeners
+  // Declare winner
+  DOM.stopAttackHandlers();
+  DOM.announceWinner(winner);
+}
 
 function playerAttack(coordinates) {
   player1.sendAttack(computer.board, coordinates);
   DOM.updateOpponentBoard(computer.board.board);
   if (computer.board.allShipsSunk()) {
-    alert('Player has won!'); // This will be replaced with a function to formally end game
+    endGame(player1.name);
+    //alert('Player has won!'); // This will be replaced with a function to formally end game
   }
 
   computer.sendAttack(player1.board);
   DOM.updatePlayerBoard(player1.board.board);
   if (player1.board.allShipsSunk()) {
-    alert('Computer has won!'); // This will be replaced with a function to formally end game
+    endGame(computer.name);
+    //alert('Computer has won!'); // This will be replaced with a function to formally end game
   }
 }
 
-function attackHandlers() {
-  const opponentBoard = document.querySelector('#gameboard-opponent');
-
-  const cells = opponentBoard.querySelectorAll('.board-cell-blank');
-  for (const cell of cells) {
-    const y = cell.getAttribute('y');
-    const x = cell.getAttribute('x');
-    cell.addEventListener('click', () => playerAttack([y, x]));
-  }
+function startGame() {
+  pubSub.subscribe('attack', playerAttack);
+  DOM.attackHandlers();
 }
 
-attackHandlers()
+DOM.startButtonHandler();
+DOM.stopButtonHandler();
+
+pubSub.subscribe('startGame', startGame);
+pubSub.subscribe('endGame', endGame);

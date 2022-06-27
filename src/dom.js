@@ -1,6 +1,7 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable import/prefer-default-export */
 /* eslint-disable no-plusplus */
+import pubSub from './pubsub';
 
 function createHeader(tableRow, text) {
   const boardHeader = document.createElement('th');
@@ -75,4 +76,47 @@ export function updateOpponentBoard(opponentBoard) {
       }
     }
   }
+}
+
+function publishAttack(event) {
+  const y = event.target.getAttribute('y');
+  const x = event.target.getAttribute('x');
+  pubSub.publish('attack', [y, x]);
+}
+
+export function attackHandlers() {
+  const opponentBoard = document.querySelector('#gameboard-opponent');
+  const cells = opponentBoard.querySelectorAll('.board-cell-blank');
+
+  for (const cell of cells) {
+    cell.addEventListener('click', publishAttack);
+  }
+}
+
+export function stopAttackHandlers() {
+  const opponentBoard = document.querySelector('#gameboard-opponent');
+  const cells = opponentBoard.querySelectorAll('.board-cell-blank');
+
+  for (const cell of cells) {
+    cell.removeEventListener('click', publishAttack);
+  }
+}
+
+export function stopButtonHandler() {
+  const startButton = document.querySelector('.stop-game');
+  startButton.addEventListener('click', () => {
+    pubSub.publish('endGame', 'off to the races');
+  });
+}
+
+export function announceWinner(winner) {
+  const header = document.querySelector('.header');
+  header.textContent = `${winner} wins!`;
+}
+
+export function startButtonHandler() {
+  const startButton = document.querySelector('.start-game');
+  startButton.addEventListener('click', () => {
+    pubSub.publish('startGame', 'off to the races');
+  });
 }
