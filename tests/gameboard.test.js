@@ -24,6 +24,18 @@ test('Vertical ship placement works correctly', () => {
     ],
   );
 });
+/*
+test("Ship's position attribute updates correctly", () => {
+  const carrier = new Ship(5);
+  const battleship = new Ship(4);
+  const gameboard = new Gameboard();
+  gameboard.placeShip(carrier, [0, 0], 'vertical');
+  gameboard.placeShip(battleship, [2, 1], 'horizontal');
+
+  expect(carrier.position).toStrictEqual([[0, 0], [1, 0], [2, 0], [3, 0], [4, 0]]);
+  expect(battleship.position).toStrictEqual([[2, 1], [2, 2], [2, 3], [2, 4]]);
+});
+*/
 
 test('Horizontal ship placement works correctly', () => {
   const battleship = new Ship(4);

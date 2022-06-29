@@ -23,6 +23,7 @@ computer.setPlayerName('Computer');
 
 const players = [player1, computer];
 
+
 for (const player of players) {
   const carrier = new Ship(5);
   const battleship = new Ship(4);
@@ -32,6 +33,7 @@ for (const player of players) {
 
   const ships = [carrier, battleship, destroyer, submarine, patrolBoat];
   const orientations = ['vertical', 'horizontal'];
+  let shipNum = 1;
 
   for (const ship of ships) {
     let coord = [getRandInt(10), getRandInt(10)];
@@ -41,6 +43,11 @@ for (const player of players) {
     while (placed === false) {
       if (player.board.placeShip(ship, coord, orientation) !== false) {
         player.board.placeShip(ship, coord, orientation);
+        if (player === player1) {
+          const shipID = `ship_${shipNum}`;
+          DOM.renderPlayerShip(shipID, ship, coord, orientation);
+          shipNum += 1;
+        }
         placed = true;
       } else {
         coord = [getRandInt(10), getRandInt(10)];
@@ -50,11 +57,17 @@ for (const player of players) {
   }
 }
 
+
+/*
+const carrier = new Ship(5);
+player1.board.placeShip(carrier, [0, 0], 'horizontal');
+DOM.renderPlayerShip(carrier, [0, 0], 'horizontal');
+*/
+
+// DOM.showPlayerShips(player1.board);
 DOM.updatePlayerBoard(player1.board.board);
 
 function endGame(winner) {
-  // Delete all attack listeners
-  // Declare winner
   DOM.stopAttackHandlers();
   DOM.announceWinner(winner);
 }
@@ -64,15 +77,18 @@ function playerAttack(coordinates) {
   DOM.updateOpponentBoard(computer.board.board);
   if (computer.board.allShipsSunk()) {
     endGame(player1.name);
-    //alert('Player has won!'); // This will be replaced with a function to formally end game
   }
 
   computer.sendAttack(player1.board);
   DOM.updatePlayerBoard(player1.board.board);
   if (player1.board.allShipsSunk()) {
     endGame(computer.name);
-    //alert('Computer has won!'); // This will be replaced with a function to formally end game
   }
+}
+
+function moveShip(moveData) {
+  console.log(moveData.coordinates);
+  console.log(moveData.orientation);
 }
 
 function startGame() {
@@ -80,8 +96,12 @@ function startGame() {
   DOM.attackHandlers();
 }
 
-DOM.startButtonHandler();
-DOM.stopButtonHandler();
+pubSub.subscribe('move', moveShip);
 
 pubSub.subscribe('startGame', startGame);
-pubSub.subscribe('endGame', endGame);
+
+DOM.startButtonHandler();
+DOM.shipDragHandlers();
+DOM.shipDropHandlers();
+
+// pubSub.subscribe('endGame', endGame);

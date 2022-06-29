@@ -4,6 +4,9 @@ body{
   margin: 0;
   padding: 0;
   font-family: Roboto;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+   box-sizing: border-box;
 }
 
 .container{
@@ -29,51 +32,77 @@ body{
 .gameboard-padding{
   width: 100%;
 }
+
 table{
   border-spacing: 0px;
   border-collapse: collapse;
-  min-height: 401px;
-  min-width: 401px;
+  min-height: 11em;
+  min-width: 11em;
 }
 
-.board-cell-blank{
-  border: 1px solid rgb(175, 175, 255);
-  height: 35px;
-  width: 35px;
+td{
+  padding: 0;
+}
+
+.board-cell{
+  outline: 1px solid rgb(175, 175, 255);
+  height: 2em;
+  width: 2em;
+}
+
+.board-cell-content{
+  position: relative;
+  height: 2em;
+  width: 2em;
+}
+
+.hit{
+  /*
+  height: 2em;
+  width: 2em;
+  outline: 2px solid red;
   box-sizing: border-box;
+  */
+  background-color: red;
 }
 
-.board-cell-hit{
+.miss{
+  /*
+  height: 2em;
+  width: 2em;
   height: 35px;
   width: 35px;
-  background-color: rgb(255, 200, 200);
-  border: 2px solid red;
-  box-sizing: border-box;
-}
-
-.board-cell-miss{
-  height: 35px;
-  width: 35px;
-  background-color: gray;
   border: 2px solid gray;
   box-sizing: border-box;
+  */
+  background-color: gray;
 }
 
-.board-cell-ship{
+.ship{
+  /*
+  height: 2em;
+  width: 2em;
   height: 35px;
   width: 35px;
-  background-color: rgb(200, 200, 255);
+  */
+  background-color: rgb(200, 200, 255, 0.5);
   border: 2px solid blue;
   box-sizing: border-box;
 }
 
-.board-cell-blank:hover{
+.board-cell:hover{
   background-color: rgb(225, 225, 255);
 }
 
 .square{
+  /*
   height: 35px;
   width: 35px;
+  */
+}
+
+.pink{
+  background-color: pink;
 }
 
 

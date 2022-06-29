@@ -1,7 +1,7 @@
 export default class Ship {
   constructor(length) {
     this.length = length;
-    //this.damage = Array(length).fill(0);
+    //this.position = [];
     this.damage = 0;
     this.sunk = false;
   }
