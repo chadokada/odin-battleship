@@ -1,3 +1,4 @@
+/* eslint-disable radix */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable import/prefer-default-export */
 /* eslint-disable no-plusplus */
@@ -6,7 +7,6 @@ import pubSub from './pubsub';
 //
 // DOM methods to render gameboard and ships
 //
-
 function createHeader(tableRow, text) {
   const boardHeader = document.createElement('th');
   boardHeader.textContent = text;
@@ -74,6 +74,15 @@ export function renderPlayerShip(id, ship, coord, orientation) {
   cellContent.appendChild(shipSquare);
 }
 
+export function removePlayerShip(coord) {
+  const x = coord[1];
+  const y = coord[0];
+  const cellContent = document.querySelector(
+    `[y="${y}"][x="${x}"][player="player"]`
+  );
+  cellContent.removeChild(cellContent.firstElementChild);
+}
+
 export function updatePlayerBoard(playerBoard) {
   for (let row = 0; row < 10; row++) {
     for (let col = 0; col < 10; col++) {
@@ -110,7 +119,6 @@ export function updateOpponentBoard(opponentBoard) {
 //
 // DOM methods to handle user attacks
 //
-
 function publishAttack(event) {
   const y = event.target.getAttribute('y');
   const x = event.target.getAttribute('x');
@@ -127,22 +135,11 @@ export function attackHandlers() {
 }
 
 //
-// DOM methods to handle ship drag and drops
+// DOM methods to handle ship moving
 //
-
 function dragStart(e) {
   e.dataTransfer.setData('div', e.target.id);
 }
-
-export function shipDragHandlers() {
-  const playerBoard = document.querySelector('#gameboard-player');
-  const ships = playerBoard.querySelectorAll('.ship');
-
-  for (const ship of ships) {
-    ship.addEventListener('dragstart', dragStart);
-  }
-}
-
 
 function dragEnter(e) {
   e.preventDefault();
@@ -153,24 +150,73 @@ function dragOver(e) {
 }
 
 function moveShip(e) {
-  const coordinates = [
-    e.target.getAttribute('y'),
-    e.target.getAttribute('x'),
-  ];
-
   const shipID = e.dataTransfer.getData('div');
+
   const shipBox = document.getElementById(shipID);
+  const shipCoord = [
+    parseInt(shipBox.parentElement.getAttribute('y')),
+    parseInt(shipBox.parentElement.getAttribute('x')),
+  ];
   const orientation = shipBox.getAttribute('orientation');
 
+  const moveCoord = [
+    parseInt(e.target.getAttribute('y')),
+    parseInt(e.target.getAttribute('x')),
+  ];
   pubSub.publish(
     'move',
     {
-      coordinates,
+      shipID,
+      shipCoord,
+      orientation,
+      moveCoord,
+    },
+  );
+}
+
+function rotateShip(e) {
+  const shipID = e.target.id;
+  const shipCoord = [
+    parseInt(e.target.parentElement.getAttribute('y')),
+    parseInt(e.target.parentElement.getAttribute('x'))
+  ];
+  let orientation = e.target.getAttribute('orientation');
+
+  if (orientation === 'horizontal') {
+    orientation = 'vertical';
+  } else {
+    orientation = 'horizontal';
+  }
+  pubSub.publish(
+    'rotate',
+    {
+      shipID,
+      shipCoord,
       orientation,
     },
   );
 }
 
+//
+// Game flow
+//
+export function announceWinner(winner) {
+  const header = document.querySelector('.header');
+  header.textContent = `${winner} wins!`;
+}
+
+//
+// Event Handlers
+//
+
+export function shipDragHandlers() {
+  const playerBoard = document.querySelector('#gameboard-player');
+  const ships = playerBoard.querySelectorAll('.ship');
+
+  for (const ship of ships) {
+    ship.addEventListener('dragstart', dragStart);
+  }
+}
 
 export function shipDropHandlers() {
   const playerBoard = document.querySelector('#gameboard-player');
@@ -183,9 +229,14 @@ export function shipDropHandlers() {
   }
 }
 
-//
-// Game flow handlers
-//
+export function shipClickHandlers() {
+  const playerBoard = document.querySelector('#gameboard-player');
+  const ships = playerBoard.querySelectorAll('.ship');
+
+  for (const ship of ships) {
+    ship.addEventListener('click', rotateShip);
+  }
+}
 
 export function stopAttackHandlers() {
   const opponentBoard = document.querySelector('#gameboard-opponent');
@@ -196,47 +247,9 @@ export function stopAttackHandlers() {
   }
 }
 
-export function announceWinner(winner) {
-  const header = document.querySelector('.header');
-  header.textContent = `${winner} wins!`;
-}
-
 export function startButtonHandler() {
   const startButton = document.querySelector('.start-game');
   startButton.addEventListener('click', () => {
     pubSub.publish('startGame', 'off to the races');
   });
 }
-
-//
-// Delete later *****************************
-//
-//remove
-export function stopButtonHandler() {
-  const startButton = document.querySelector('.stop-game');
-  startButton.addEventListener('click', () => {
-    pubSub.publish('endGame', 'off to the races');
-  });
-}
-
-/*
-// deprecatedd
-export function showPlayerShips(playerBoard) {
-  const {ships} = playerBoard;
-
-  for (const ship of ships) {
-    const coordinates = ship.position;
-    for (const coord of coordinates) {
-      const x = coord[1];
-      const y = coord[0];
-      const cellContent = document.querySelector(
-        `[y="${y}"][x="${x}"][player="player"]`
-      );
-
-      const shipSquare = document.createElement('div');
-      shipSquare.className = 'ship';
-      cellContent.appendChild(shipSquare)
-    }
-  }
-}
-*/

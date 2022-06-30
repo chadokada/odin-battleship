@@ -32,7 +32,16 @@ export default class Gameboard {
     return isValid;
   }
 
+  #removeShip(ship) {
+    for (let y = 0; y < this.boardSize; y++) {
+      for (let x = 0; x < this.boardSize; x++) {
+        this.board[y][x] === ship ? this.board[y][x] = '' : null;
+      }
+    }
+  }
+
   placeShip(ship, coordinates, orientation) {
+    this.#removeShip(ship)// if ship was previously placed
     const x = coordinates[1];
     const y = coordinates[0];
     const placementValid = this.#isPlacementValid(ship, coordinates, orientation);
