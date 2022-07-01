@@ -5,6 +5,144 @@
 import pubSub from './pubsub';
 
 //
+// Event-driven functions
+//
+
+function newGame() {
+  pubSub.publish('newGame', 'Start new game!')
+}
+
+function publishAttack(event) {
+  const y = event.target.getAttribute('y');
+  const x = event.target.getAttribute('x');
+  pubSub.publish('attack', [y, x]);
+}
+
+function dragStart(e) {
+  e.dataTransfer.setData('div', e.target.getAttribute('ship-name'));
+}
+
+function dragEnter(e) {
+  e.preventDefault();
+}
+
+function dragOver(e) {
+  e.preventDefault();
+}
+
+function moveShip(e) {
+  const shipName = e.dataTransfer.getData('div');
+  const shipBox = document.querySelector(`[ship-name="${shipName}"]`);
+
+  const shipCoord = [
+    parseInt(shipBox.parentElement.getAttribute('y')),
+    parseInt(shipBox.parentElement.getAttribute('x')),
+  ];
+  const orientation = shipBox.getAttribute('orientation');
+
+  const moveCoord = [
+    parseInt(e.target.getAttribute('y')),
+    parseInt(e.target.getAttribute('x')),
+  ];
+  pubSub.publish(
+    'move',
+    {
+      shipName,
+      shipCoord,
+      orientation,
+      moveCoord,
+    },
+  );
+}
+
+function rotateShip(e) {
+  const shipName = e.target.getAttribute('ship-name');
+
+  const shipCoord = [
+    parseInt(e.target.parentElement.getAttribute('y')),
+    parseInt(e.target.parentElement.getAttribute('x'))
+  ];
+  let orientation = e.target.getAttribute('orientation');
+
+  if (orientation === 'horizontal') {
+    orientation = 'vertical';
+  } else {
+    orientation = 'horizontal';
+  }
+  pubSub.publish(
+    'rotate',
+    {
+      shipName,
+      shipCoord,
+      orientation,
+    },
+  );
+}
+
+export function newGameHandler() {
+  const newGameButton = document.querySelector('.new-game');
+  newGameButton.addEventListener('click', () => {
+    pubSub.publish('newGame', 'Start new game!')
+    console.log('newgame')
+    //pubSub.publish('startGame', 'off to the races');
+  });
+}
+
+export function startButtonHandler() {
+  const startButton = document.querySelector('.start-game');
+  startButton.addEventListener('click', () => {
+    pubSub.publish('startGame', 'off to the races');
+  });
+}
+
+export function attackHandlers() {
+  const opponentBoard = document.querySelector('#gameboard-opponent');
+  const cells = opponentBoard.querySelectorAll('.board-cell');
+
+  for (const cell of cells) {
+    cell.addEventListener('click', publishAttack);
+  }
+}
+
+export function shipDragHandlers() {
+  const playerBoard = document.querySelector('#gameboard-player');
+  const ships = playerBoard.querySelectorAll('.ship');
+
+  for (const ship of ships) {
+    ship.addEventListener('dragstart', dragStart);
+  }
+}
+
+export function shipDropHandlers() {
+  const playerBoard = document.querySelector('#gameboard-player');
+  const cells = playerBoard.querySelectorAll('.board-cell-content');
+
+  for (const cell of cells) {
+    cell.addEventListener('dragenter', dragEnter);
+    cell.addEventListener('dragover', dragOver);
+    cell.addEventListener('drop', moveShip);
+  }
+}
+
+export function shipClickHandlers() {
+  const playerBoard = document.querySelector('#gameboard-player');
+  const ships = playerBoard.querySelectorAll('.ship');
+
+  for (const ship of ships) {
+    ship.addEventListener('click', rotateShip);
+  }
+}
+
+export function stopAttackHandlers() {
+  const opponentBoard = document.querySelector('#gameboard-opponent');
+  const cells = opponentBoard.querySelectorAll('.board-cell');
+
+  for (const cell of cells) {
+    cell.removeEventListener('click', publishAttack);
+  }
+}
+
+//
 // DOM methods to render gameboard and ships
 //
 function createHeader(tableRow, text) {
@@ -51,36 +189,51 @@ export function renderGameboard(player) {
   }
 }
 
-export function renderPlayerShip(id, ship, coord, orientation) {
-  const shipLength = ship.length;
-  const [x, y] = [coord[1], coord[0]];
-  const cellContent = document.querySelector(
-    `[y="${y}"][x="${x}"][player="player"]`
-  );
-  const shipSquare = document.createElement('div');
-  shipSquare.className = 'ship';
-  shipSquare.id = id;
-  shipSquare.setAttribute('draggable', 'true');
-  shipSquare.setAttribute('orientation', orientation);
-
-  if (orientation === 'horizontal') {
-    shipSquare.style.height = '2em';
-    shipSquare.style.width = `${2 * shipLength}em`;
+function clearPlayerBoard() {
+  for (let y = 0; y < 10; y++) {
+    for (let x = 0; x < 10; x++) {
+      const cellContent = document.querySelector(
+        `[y="${y}"][x="${x}"][player="player"]`
+      );
+      if (cellContent.firstElementChild != null) {
+        cellContent.removeChild(cellContent.firstElementChild);
+      }
+    }
   }
-  if (orientation === 'vertical') {
-    shipSquare.style.height = `${2 * shipLength}em`;
-    shipSquare.style.width = '2em';
-  }
-  cellContent.appendChild(shipSquare);
 }
 
-export function removePlayerShip(coord) {
-  const x = coord[1];
-  const y = coord[0];
-  const cellContent = document.querySelector(
-    `[y="${y}"][x="${x}"][player="player"]`
-  );
-  cellContent.removeChild(cellContent.firstElementChild);
+export function showPlayerShips(board) {
+  clearPlayerBoard();
+  const { ships } = board;
+  for (const ship of ships) {
+    const { name } = ship;
+    const coord = board.getCurrentCoord(ship);
+    const orientation = board.getOrientation(ship);
+    const shipLength = ship.length;
+    const [x, y] = [coord[1], coord[0]];
+    const cellContent = document.querySelector(
+      `[y="${y}"][x="${x}"][player="player"]`
+    );
+    const shipSquare = document.createElement('div');
+    shipSquare.className = 'ship';
+    shipSquare.setAttribute('ship-name', name);
+    shipSquare.setAttribute('draggable', 'true');
+    shipSquare.setAttribute('orientation', orientation);
+
+    if (orientation === 'horizontal') {
+      shipSquare.style.height = '2em';
+      shipSquare.style.width = `${2 * shipLength}em`;
+    }
+    if (orientation === 'vertical') {
+      shipSquare.style.height = `${2 * shipLength}em`;
+      shipSquare.style.width = '2em';
+    }
+    cellContent.appendChild(shipSquare);
+  }
+
+  shipDragHandlers();
+  shipClickHandlers();
+  shipDropHandlers();
 }
 
 export function updatePlayerBoard(playerBoard) {
@@ -116,8 +269,10 @@ export function updateOpponentBoard(opponentBoard) {
   }
 }
 
+/*
+
 //
-// DOM methods to handle user attacks
+// Event-driven functions
 //
 function publishAttack(event) {
   const y = event.target.getAttribute('y');
@@ -134,11 +289,8 @@ export function attackHandlers() {
   }
 }
 
-//
-// DOM methods to handle ship moving
-//
 function dragStart(e) {
-  e.dataTransfer.setData('div', e.target.id);
+  e.dataTransfer.setData('div', e.target.getAttribute('ship-name'));
 }
 
 function dragEnter(e) {
@@ -150,9 +302,9 @@ function dragOver(e) {
 }
 
 function moveShip(e) {
-  const shipID = e.dataTransfer.getData('div');
+  const shipName = e.dataTransfer.getData('div');
+  const shipBox = document.querySelector(`[ship-name="${shipName}"]`);
 
-  const shipBox = document.getElementById(shipID);
   const shipCoord = [
     parseInt(shipBox.parentElement.getAttribute('y')),
     parseInt(shipBox.parentElement.getAttribute('x')),
@@ -166,7 +318,7 @@ function moveShip(e) {
   pubSub.publish(
     'move',
     {
-      shipID,
+      shipName,
       shipCoord,
       orientation,
       moveCoord,
@@ -175,7 +327,8 @@ function moveShip(e) {
 }
 
 function rotateShip(e) {
-  const shipID = e.target.id;
+  const shipName = e.target.getAttribute('ship-name');
+
   const shipCoord = [
     parseInt(e.target.parentElement.getAttribute('y')),
     parseInt(e.target.parentElement.getAttribute('x'))
@@ -190,24 +343,12 @@ function rotateShip(e) {
   pubSub.publish(
     'rotate',
     {
-      shipID,
+      shipName,
       shipCoord,
       orientation,
     },
   );
 }
-
-//
-// Game flow
-//
-export function announceWinner(winner) {
-  const header = document.querySelector('.header');
-  header.textContent = `${winner} wins!`;
-}
-
-//
-// Event Handlers
-//
 
 export function shipDragHandlers() {
   const playerBoard = document.querySelector('#gameboard-player');
@@ -253,3 +394,47 @@ export function startButtonHandler() {
     pubSub.publish('startGame', 'off to the races');
   });
 }
+
+*/
+
+//
+// Game flow
+//
+export function announceWinner(winner) {
+  const header = document.querySelector('.header');
+  header.textContent = `${winner} wins!`;
+}
+
+/*
+export function renderPlayerShip(id, ship, coord, orientation) {
+  const shipLength = ship.length;
+  const [x, y] = [coord[1], coord[0]];
+  const cellContent = document.querySelector(
+    `[y="${y}"][x="${x}"][player="player"]`
+  );
+  const shipSquare = document.createElement('div');
+  shipSquare.className = 'ship';
+  shipSquare.id = id;
+  shipSquare.setAttribute('draggable', 'true');
+  shipSquare.setAttribute('orientation', orientation);
+
+  if (orientation === 'horizontal') {
+    shipSquare.style.height = '2em';
+    shipSquare.style.width = `${2 * shipLength}em`;
+  }
+  if (orientation === 'vertical') {
+    shipSquare.style.height = `${2 * shipLength}em`;
+    shipSquare.style.width = '2em';
+  }
+  cellContent.appendChild(shipSquare);
+}
+
+export function removePlayerShip(coord) {
+  const x = coord[1];
+  const y = coord[0];
+  const cellContent = document.querySelector(
+    `[y="${y}"][x="${x}"][player="player"]`
+  );
+  cellContent.removeChild(cellContent.firstElementChild);
+}
+*/

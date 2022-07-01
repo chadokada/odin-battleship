@@ -1,7 +1,7 @@
 export default class Ship {
-  constructor(length) {
+  constructor(length, name) {
     this.length = length;
-    //this.position = [];
+    this.name = name;
     this.damage = 0;
     this.sunk = false;
   }
@@ -11,20 +11,9 @@ export default class Ship {
     if (this.isSunk()) {
       this.sunk = true;
     }
-    /*
-    if (this.damage[position] === 0) {
-      this.damage[position] = 1;
-    }
-    */
   }
 
   isSunk() {
-    //const totalDamage = this.damage.reduce((sum, x) => sum + x, 0);
-    /*
-    if (this.damage === this.length) {
-      this.sunk = true;
-    }
-    */
     return this.damage === this.length;
   }
 }

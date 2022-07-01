@@ -11,60 +11,27 @@ export default class Gameboard {
     this.ships = [];
   }
 
-  #isPlacementValid(ship, coordinates, orientation) {
-    const x = coordinates[1];
-    const y = coordinates[0];
-    let isValid = false;
+  #countBlankSpaces(coord, numSpaces, orientation) {
+    const x = coord[1];
+    const y = coord[0];
     let blankSpaces = 0;
-    if (orientation == 'vertical' && y + ship.length <= this.boardSize) {
-      for (let i = y; i < ship.length + y; i++) {
-        this.board[i][x] == '' ? blankSpaces += 1 : null;
-      }
-    } else if (orientation == 'horizontal' && x + ship.length <= this.boardSize) {
-      for (let i = x; i < ship.length + x; i++) {
-        this.board[y][i] == '' ? blankSpaces += 1 : null;
-      }
-    }
-    if (blankSpaces == ship.length) {
-      isValid = true;
-    }
 
-    return isValid;
-  }
-
-  #removeShip(ship) {
-    for (let y = 0; y < this.boardSize; y++) {
-      for (let x = 0; x < this.boardSize; x++) {
-        this.board[y][x] === ship ? this.board[y][x] = '' : null;
-      }
-    }
-    const shipInd = this.ships.indexOf(ship);
-    shipInd > -1 ? this.ships.splice(shipInd, 1) : null;
-  }
-
-  placeShip(ship, coordinates, orientation) {
-    const x = coordinates[1];
-    const y = coordinates[0];
-    const placementValid = this.#isPlacementValid(ship, coordinates, orientation);
-    if (placementValid) {
-      this.#removeShip(ship)// if ship was previously placed
-      this.ships.push(ship);
+    for (let i = 0; i < numSpaces; i++) {
       if (orientation === 'vertical') {
-        for (let i = 0; i < ship.length; i++) {
-          this.board[y + i][x] = ship;
+        if (y + i < this.boardSize) {
+          this.board[y + i][x] === '' ? blankSpaces += 1 : null;
         }
       }
       if (orientation === 'horizontal') {
-        for (let i = 0; i < ship.length; i++) {
-          this.board[y][x + i] = ship;
+        if (x + i < this.boardSize) {
+          this.board[y][x + i] === '' ? blankSpaces += 1 : null;
         }
       }
-    } else {
-      return placementValid;
     }
+    return blankSpaces;
   }
 
-  #getCurrentCoord(ship) {
+  getCurrentCoord(ship) {
     let shipFound = false;
     let currCoord = null;
     while (shipFound === false) {
@@ -84,23 +51,70 @@ export default class Gameboard {
     return currCoord;
   }
 
-  #countBlankSpaces(coord, numSpaces, orientation) {
+  getOrientation(ship) {
+    const currCoord = this.getCurrentCoord(ship);
+    const x = currCoord[1];
+    const y = currCoord[0];
+    let orientation = null;
+
+    if (y + 1 < this.boardSize && this.board[y + 1][x] === ship) {
+      orientation = 'vertical';
+    } else if (x + 1 < this.boardSize && this.board[y][x + 1] === ship) {
+      orientation = 'horizontal';
+    }
+    return orientation;
+  }
+
+  #isPlacementValid(ship, coord, orientation) {
     const x = coord[1];
     const y = coord[0];
+    let isValid = false;
     let blankSpaces = 0;
+    if (orientation == 'vertical' && y + ship.length <= this.boardSize) {
+      blankSpaces = this.#countBlankSpaces(coord, ship.length, orientation);
+    } else if (orientation == 'horizontal' && x + ship.length <= this.boardSize) {
+      blankSpaces = this.#countBlankSpaces(coord, ship.length, orientation);
+    }
+    if (blankSpaces == ship.length) {
+      isValid = true;
+    }
+    return isValid;
+  }
 
-    for (let i = 0; i < numSpaces; i++) {
-      if (orientation === 'vertical') {
-        this.board[y + i][x] === '' ? blankSpaces += 1 : null;
-      } else {
-        this.board[y][x + i] === '' ? blankSpaces += 1 : null;
+  #removeShip(ship) {
+    for (let y = 0; y < this.boardSize; y++) {
+      for (let x = 0; x < this.boardSize; x++) {
+        this.board[y][x] === ship ? this.board[y][x] = '' : null;
       }
     }
-    return blankSpaces;
+    const shipInd = this.ships.indexOf(ship);
+    shipInd > -1 ? this.ships.splice(shipInd, 1) : null;
+  }
+
+  placeShip(ship, coordinates, orientation) {
+    const x = coordinates[1];
+    const y = coordinates[0];
+    const placementValid = this.#isPlacementValid(ship, coordinates, orientation);
+    if (placementValid) {
+      this.#removeShip(ship); // if ship was previously placed
+      this.ships.push(ship);
+      if (orientation === 'vertical') {
+        for (let i = 0; i < ship.length; i++) {
+          this.board[y + i][x] = ship;
+        }
+      }
+      if (orientation === 'horizontal') {
+        for (let i = 0; i < ship.length; i++) {
+          this.board[y][x + i] = ship;
+        }
+      }
+    } else {
+      return placementValid;
+    }
   }
 
   rotateShip(ship) {
-    const currCoord = this.#getCurrentCoord(ship);
+    const currCoord = this.getCurrentCoord(ship);
     const x = currCoord[1];
     const y = currCoord[0];
     let newDirr = null;
@@ -115,6 +129,8 @@ export default class Gameboard {
     if (freeSpaces == ship.length - 1) {
       this.#removeShip(ship);
       this.placeShip(ship, currCoord, newDirr);
+    } else {
+      return false;
     }
   }
 
