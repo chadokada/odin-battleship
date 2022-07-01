@@ -64,12 +64,6 @@ export default class Gameboard {
     }
   }
 
-  moveShip(ship, coordinates, currOrientation, type = 'move') {
-    if (type === 'move') {
-      this.placeShip(ship, coordinates, currOrientation);
-    }
-  }
-
   #getCurrentCoord(ship) {
     let shipFound = false;
     let currCoord = null;
@@ -102,27 +96,27 @@ export default class Gameboard {
         this.board[y][x + i] === '' ? blankSpaces += 1 : null;
       }
     }
-
+    return blankSpaces;
   }
 
   rotateShip(ship) {
     const currCoord = this.#getCurrentCoord(ship);
     const x = currCoord[1];
     const y = currCoord[0];
-    let currOrientation = null;
+    let newDirr = null;
 
-    if (this.board[x][y + 1] === ship) {
-      currOrientation = 'vertical';
-    } else if (this.board[x + 1][y] === ship) {
-      currOrientation = 'horizontal';
+    if (this.board[y + 1][x] === ship) {
+      newDirr = 'horizontal';
+    } else if (this.board[y][x + 1] === ship) {
+      newDirr = 'vertical';
     }
 
-    Joh
-    console.log(this.#countBlankSpaces(currCoord, ship.length, 'vertical'))
-
-
+    const freeSpaces = this.#countBlankSpaces(currCoord, ship.length, newDirr);
+    if (freeSpaces == ship.length - 1) {
+      this.#removeShip(ship);
+      this.placeShip(ship, currCoord, newDirr);
+    }
   }
-
 
   receiveAttack(coordinates) {
     const x = coordinates[1];
