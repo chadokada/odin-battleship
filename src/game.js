@@ -23,7 +23,7 @@ computer.setPlayerName('Computer');
 
 const players = [player1, computer];
 
-
+/*
 for (const player of players) {
   const carrier = new Ship(5);
   const battleship = new Ship(4);
@@ -57,12 +57,12 @@ for (const player of players) {
   }
 }
 //console.table(player1.board.board)
+*/
 
-/*
 const carrier = new Ship(5);
 player1.board.placeShip(carrier, [1, 0], 'horizontal');
 DOM.renderPlayerShip('ship_1', carrier, [1, 0], 'horizontal');
-*/
+
 
 // DOM.showPlayerShips(player1.board);
 DOM.updatePlayerBoard(player1.board.board);
@@ -106,6 +106,13 @@ function rotateShip(rotateData) {
   const ship = player1.board.board[rotateData.shipCoord[0]][rotateData.shipCoord[1]];
   const { orientation, shipID } = rotateData;
 
+  //console.log(player1.board.placeShip(ship, coord, orientation))
+  console.log(ship)
+  console.log(coord)
+  console.log(orientation)
+
+
+
   if (player1.board.placeShip(ship, coord, orientation) !== false) {
     player1.board.placeShip(ship, coord, orientation);
     DOM.removePlayerShip(coord);
@@ -113,6 +120,7 @@ function rotateShip(rotateData) {
     DOM.shipDragHandlers();
     DOM.shipClickHandlers();
   }
+  console.table(player1.board.board)
 }
 
 function startGame() {

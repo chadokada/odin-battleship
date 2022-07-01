@@ -4,6 +4,7 @@
 import Ship from '../src/ship';
 import Gameboard from '../src/gameboard';
 
+/*
 test('Vertical ship placement works correctly', () => {
   const carrier = new Ship(5);
   const gameboard = new Gameboard();
@@ -158,16 +159,42 @@ test('Ships wont intersect perpendicularly', () => {
   );
 });
 
-/*
+// ***************************************************************************
+
 test('moveShip correctly moves ship on a board with one ship', () => {
   const carrier = new Ship(5);
   const gameboard = new Gameboard();
   gameboard.placeShip(carrier, [0, 0], 'vertical');
-  gameboard.moveShip(carrier);
+  gameboard.moveShip(carrier, [0, 1], 'vertical');
+
+  expect(gameboard.board).toStrictEqual(
+    [
+      ['', carrier, '', '', '', '', '', '', '', ''],
+      ['', carrier, '', '', '', '', '', '', '', ''],
+      ['', carrier, '', '', '', '', '', '', '', ''],
+      ['', carrier, '', '', '', '', '', '', '', ''],
+      ['', carrier, '', '', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', '', '', '', ''],
+    ],
+  );
+  expect(gameboard.ships).toStrictEqual([carrier]);
+});
+*/
+
+test('rotateShip correctly rotates ship on a board with one ship', () => {
+  const carrier = new Ship(5);
+  const gameboard = new Gameboard();
+  gameboard.placeShip(carrier, [1, 1], 'vertical');
+  gameboard.rotateShip(carrier);
+
   expect(gameboard.board).toStrictEqual(
     [
       ['', '', '', '', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', '', '', '', ''],
+      ['', carrier, carrier, carrier, carrier, carrier, '', '', '', '', ''],
       ['', '', '', '', '', '', '', '', '', ''],
       ['', '', '', '', '', '', '', '', '', ''],
       ['', '', '', '', '', '', '', '', '', ''],
@@ -179,8 +206,11 @@ test('moveShip correctly moves ship on a board with one ship', () => {
     ],
   );
 });
-*/
 
+// ***************************************************************************
+
+
+/*
 
 test('receiveAttack correctly attacks ship', () => {
   const patrolBoat = new Ship(2);
@@ -247,3 +277,5 @@ test('All ships sunk', () => {
   }
   expect(gameboard.allShipsSunk()).toBe(true);
 });
+
+*/
