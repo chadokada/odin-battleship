@@ -19,6 +19,7 @@ module.exports = {
         filename: 'main.js',
         filename: '[name].main.js',
         path: path.resolve(__dirname, 'dist'),
+        publicPath: "/odin-battleship/"
         //clean: true,
     },
     module:{
