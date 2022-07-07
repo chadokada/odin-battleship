@@ -7,11 +7,6 @@ import pubSub from './pubsub';
 //
 // Event-driven functions
 //
-
-function newGame() {
-  pubSub.publish('newGame', 'Start new game!')
-}
-
 function publishAttack(event) {
   const y = event.target.getAttribute('y');
   const x = event.target.getAttribute('x');
@@ -119,8 +114,6 @@ export function removeAllAttackHandlers() {
   for (const cell of cells) {
     cell.removeEventListener('click', publishAttack);
   }
-
-  console.log('All attack handlers removed.')
 }
 
 export function shipDragHandlers() {
@@ -166,6 +159,12 @@ function createBoardCell(tableRow, row, col, player) {
   const boardCell = document.createElement('td');
   boardCell.className = 'board-cell';
 
+  if (player === 'opponent') {
+    boardCell.className = 'board-cell-not-started';
+  } else {
+    boardCell.className = 'board-cell';
+  }
+
   const cellContent = document.createElement('div');
   cellContent.className = 'board-cell-content';
   cellContent.setAttribute('y', row - 1);
@@ -202,6 +201,14 @@ export function renderGameboard(player) {
       }
     }
     gameBoard.appendChild(boardRow);
+  }
+}
+
+export function startOpponentBoard() {
+  const opponentBoard = document.querySelector('#gameboard-opponent');
+  const opponentCells = opponentBoard.querySelectorAll('.board-cell-not-started');
+  for (const cell of opponentCells) {
+    cell.className = 'board-cell';
   }
 }
 
@@ -285,53 +292,37 @@ export function updateOpponentBoard(opponentBoard) {
   }
 }
 
-export function deleteShit() {
-  const gameboard = document.querySelector('#gameboard-player');
-
-  while (gameboard.firstChild) {
-    gameboard.removeChild(gameboard.firstChild)
-  }
-
-}
-
 //
 // Game flow
 //
 export function announceWinner(winner) {
   const header = document.querySelector('.header');
-  header.textContent = `${winner} wins!`;
-}
 
-/*
-export function renderPlayerShip(id, ship, coord, orientation) {
-  const shipLength = ship.length;
-  const [x, y] = [coord[1], coord[0]];
-  const cellContent = document.querySelector(
-    `[y="${y}"][x="${x}"][player="player"]`
+  const announcementContainer = document.createElement('div');
+  announcementContainer.className = 'announcement-container';
+
+  const gameWinner = document.createElement('div');
+  gameWinner.className = 'game-winner';
+  gameWinner.textContent = `${winner} wins!`;
+
+  const newLine = document.createElement('div');
+  newLine.className = 'newline';
+
+  const newGameBtn = document.createElement('button');
+  newGameBtn.className = 'new-game';
+  newGameBtn.textContent = 'New Game';
+
+  [gameWinner, newLine, newGameBtn].forEach(
+    div => announcementContainer.appendChild(div)
   );
-  const shipSquare = document.createElement('div');
-  shipSquare.className = 'ship';
-  shipSquare.id = id;
-  shipSquare.setAttribute('draggable', 'true');
-  shipSquare.setAttribute('orientation', orientation);
-
-  if (orientation === 'horizontal') {
-    shipSquare.style.height = '2em';
-    shipSquare.style.width = `${2 * shipLength}em`;
-  }
-  if (orientation === 'vertical') {
-    shipSquare.style.height = `${2 * shipLength}em`;
-    shipSquare.style.width = '2em';
-  }
-  cellContent.appendChild(shipSquare);
+  header.appendChild(announcementContainer);
+  newGameHandler();
 }
 
-export function removePlayerShip(coord) {
-  const x = coord[1];
-  const y = coord[0];
-  const cellContent = document.querySelector(
-    `[y="${y}"][x="${x}"][player="player"]`
-  );
-  cellContent.removeChild(cellContent.firstElementChild);
+export function clearHeader() {
+  const header = document.querySelector('.header');
+
+  while (header.firstChild) {
+    header.removeChild(header.firstChild);
+  }
 }
-*/

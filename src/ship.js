@@ -6,7 +6,7 @@ export default class Ship {
     this.sunk = false;
   }
 
-  hit(position) {
+  hit() {
     this.damage += 1;
     if (this.isSunk()) {
       this.sunk = true;
